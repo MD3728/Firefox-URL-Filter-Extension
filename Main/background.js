@@ -1,9 +1,20 @@
 //
-//Basic Word URL Checking Program
+// Word URL Checking Program
 //
 
-// List with blocked words and phrases
-let wordBlockList = [
+// List with blocked words and phrases (Websites)
+let worldBlockListWeb = [
+
+  // Insert most recent words that need to be blocked
+  // Format should be: ["word1", "word2"] etc.
+  "Someword",
+  "Some other word",
+  "etc."
+
+];
+
+// List with blocked words and phrases (Local Files)
+let worldBlockListLocal = [
 
   // Insert most recent words that need to be blocked
   // Format should be: ["word1", "word2"] etc.
@@ -14,7 +25,7 @@ let wordBlockList = [
 ];
 
 // Timing Methods
-let unblockedTime = [[8,40,8,50]];//8:40 -> 8:50 (Not inclusive at end point but inclusive at starting point)
+let unblockedTime = [[8,40,8,50]];//8:40 -> 8:50 (Starting time inclusive, ending time exclusive)
 let canCurrentlyBlock = true;
 
 function parseTime(){
@@ -38,11 +49,10 @@ function parseTime(){
 
 setInterval(parseTime, 2000);
 
-
-// URL Checking Methods
+// URL Checking Methods (Websites)
 let currentURL = "";
-
 function checkURL(currentWord, tabs){
+  // Check for blocked words on web pages
   if ((currentURL.includes(currentWord))&&(canCurrentlyBlock === true)){
     console.log(`Page Blocked Due To Word: ${currentWord}`);//Redirect
     let updating = browser.tabs.update(tabs[0].id, {
@@ -67,62 +77,93 @@ function sliceAnother(startingIndex, numIteration, maxIteration, startingWord, w
   }
 }
 
-// Browser Activation Methods
-browser.tabs.onActivated.addListener(() => {
-  //console.log("onActivated Listener Running");
+// URL Redirection/Blocking Methods (Web)
+function checkPage(){
   if ((!parseTime())&&(canCurrentlyBlock === true)){
     browser.tabs.query({active: true, currentWindow: true}, function(tabs){
       console.log(tabs[0].url);
       currentURL = tabs[0].url.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-      // Parse all the words
-      for (let currentWord of wordBlockList){
-        // Check the entire word
-        checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
-
-        // Check the fragments of the word
-        let wordLength = currentWord.length;
-        let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
-        if (errorCorrectionNum >= 1){
-          for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
-            let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-            finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
-            checkURL(finalWord, tabs);
-            if (errorCorrectionNum > 1){
-              sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
+      if (currentURL.slice(0,8) === "file:///"){// Check for blocked words on local files
+        // Parse all the words
+        for (let currentWord of worldBlockListLocal){
+          // Check the entire word
+          checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
+          // Check the fragments of the word
+          let wordLength = currentWord.length;
+          let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
+          if (errorCorrectionNum >= 1){
+            for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
+              let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
+              finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
+              checkURL(finalWord, tabs);
+              if (errorCorrectionNum > 1){
+                sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
+              }
             }
-          }
-        } 
+          } 
+        }
+      }else{// Check for blocked words on websites
+        // Parse all the words
+        for (let currentWord of worldBlockListWeb){
+          // Check the entire word
+          checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
+          // Check the fragments of the word
+          let wordLength = currentWord.length;
+          let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
+          if (errorCorrectionNum >= 1){
+            for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
+              let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
+              finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
+              checkURL(finalWord, tabs);
+              if (errorCorrectionNum > 1){
+                sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
+              }
+            }
+          } 
+        }
       }
     });
   }
+}
+
+// Browser Activation Methods
+browser.tabs.onActivated.addListener(() => {
+  //console.log("onActivated Listener Running");
+  checkPage();
 });
 
 browser.tabs.onUpdated.addListener(() => {
   //console.log("onUpdated Listener Running");
-  if ((!parseTime())&&(canCurrentlyBlock === true)){
-    browser.tabs.query({active: true, currentWindow: true}, function(tabs){
-      console.log(tabs[0].url);
-      currentURL = tabs[0].url.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-      // Parse all the words
-      for (let currentWord of wordBlockList){
-        // Check the entire word
-        checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
-
-        // Check the fragments of the word
-        let wordLength = currentWord.length;
-        let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
-        if (errorCorrectionNum >= 1){
-          for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
-            let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-            finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
-            checkURL(finalWord, tabs);
-            if (errorCorrectionNum > 1){
-              sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
-            }
-          }
-        } 
-      }
-    });
-  }
+  checkPage();
 });
+
+// Original code for each
+// () => {
+//   //console.log("onActivated Listener Running");
+//   if ((!parseTime())&&(canCurrentlyBlock === true)){
+//     browser.tabs.query({active: true, currentWindow: true}, function(tabs){
+//       console.log(tabs[0].url);
+//       currentURL = tabs[0].url.toLowerCase().replace(/[^a-zA-Z]/gi, '');
+//       // Parse all the words
+//       for (let currentWord of worldBlockListWeb){
+//         // Check the entire word
+//         checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
+
+//         // Check the fragments of the word
+//         let wordLength = currentWord.length;
+//         let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
+//         if (errorCorrectionNum >= 1){
+//           for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
+//             let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
+//             finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
+//             checkURL(finalWord, tabs);
+//             if (errorCorrectionNum > 1){
+//               sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
+//             }
+//           }
+//         } 
+//       }
+//     });
+//   }
+// }
 
