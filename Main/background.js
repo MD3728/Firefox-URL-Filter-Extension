@@ -52,6 +52,7 @@ setInterval(parseTime, 2000);
 // URL Checking Methods (Websites)
 let currentURL = "";
 function checkURL(currentWord, tabs){
+  console.log(currentWord);
   // Check for blocked words on web pages
   if ((currentURL.includes(currentWord))&&(canCurrentlyBlock === true)){
     console.log(`Page Blocked Due To Word: ${currentWord}`);//Redirect
@@ -60,6 +61,7 @@ function checkURL(currentWord, tabs){
       url: "https://www.google.com/"
     });
     canCurrentlyBlock = false;
+    console.log("Hello")
     setTimeout(() => {canCurrentlyBlock = true;},800);
   }
 }
@@ -83,7 +85,7 @@ function checkPage(){
     browser.tabs.query({active: true, currentWindow: true}, function(tabs){
       console.log(tabs[0].url);
       currentURL = tabs[0].url.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-      if (currentURL.slice(0,8) === "file:///"){// Check for blocked words on local files
+      if (currentURL.slice(0,4) === "file"){// Check for blocked words on local files
         // Parse all the words
         for (let currentWord of worldBlockListLocal){
           // Check the entire word
