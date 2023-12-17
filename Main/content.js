@@ -14,4 +14,4 @@ browser.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.text === "test"){
     sendResponse(document.all[0].outerHTML);
   }
-})
+});

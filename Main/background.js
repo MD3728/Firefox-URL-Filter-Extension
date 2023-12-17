@@ -24,6 +24,17 @@ let worldBlockListLocal = [
 
 ];
 
+// The following word will not be checked
+let exemptWords = [
+
+  // Insert most recent words that need to be blocked
+  // Format should be: ["word1", "word2"] etc.
+  "Someword",
+  "Some other word",
+  "etc."
+
+];
+
 // Timing Methods
 let unblockedTime = [[8,40,8,50]];//8:40 -> 8:50 (Starting time inclusive, ending time exclusive)
 let canCurrentlyBlock = true;
@@ -54,7 +65,7 @@ let currentURL = "";
 function checkURL(currentWord, tabs){
   console.log(currentWord);
   // Check for blocked words on web pages
-  if ((currentURL.includes(currentWord))&&(canCurrentlyBlock === true)){
+  if ((currentURL.includes(currentWord))&&(canCurrentlyBlock === true)&&(!exemptWords.includes(currentWord))){
     console.log(`Page Blocked Due To Word: ${currentWord}`);//Redirect
     let updating = browser.tabs.update(tabs[0].id, {
       active: true,
@@ -69,10 +80,12 @@ function checkURL(currentWord, tabs){
 // URL Randomization Methods
 // Parameters: tabs is simply "tabs" from the browser getting passed on to perform checkURL
 function sliceAnother(startingIndex, numIteration, maxIteration, startingWord, wordLength, tabs){
-  for (let a = startingIndex - numIteration; a < startingWord.length; a++){//Replace maxIteration numIteration wordLength - maxIteration
+  numIteration++;
+  for (let a = startingIndex; a < startingWord.length; a++){//Replace maxIteration numIteration wordLength - maxIteration
+    totalCounter++;
     let finalWord = startingWord.slice(0,a) + startingWord.slice(a+1);
+    //console.log(finalWord); 
     checkURL(finalWord, tabs);
-    numIteration++;
     if (numIteration < maxIteration){
       sliceAnother(a+1, numIteration, maxIteration, finalWord, wordLength, tabs);
     }
@@ -92,17 +105,11 @@ function checkPage(){
           checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
           // Check the fragments of the word
           let wordLength = currentWord.length;
-          let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
-          if (errorCorrectionNum >= 1){
-            for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
-              let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-              finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
-              checkURL(finalWord, tabs);
-              if (errorCorrectionNum > 1){
-                sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
-              }
-            }
-          } 
+          let pErrorCorrection = Math.floor((currentWord.length-1)/5);//5,10
+          let errorCorrectionNum = (pErrorCorrection > 2) ? 2 : pErrorCorrection; // Limit corrections to 2
+          //console.log(errorCorrectionNum);
+          let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
+          sliceAnother(0, 0, errorCorrectionNum, finalWord, finalWord.length, tabs); // Start Recursion
         }
       }else{// Check for blocked words on websites
         // Parse all the words
@@ -111,17 +118,11 @@ function checkPage(){
           checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
           // Check the fragments of the word
           let wordLength = currentWord.length;
-          let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
-          if (errorCorrectionNum >= 1){
-            for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
-              let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-              finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
-              checkURL(finalWord, tabs);
-              if (errorCorrectionNum > 1){
-                sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
-              }
-            }
-          } 
+          let pErrorCorrection = Math.floor((currentWord.length-1)/5);//5,10
+          let errorCorrectionNum = (pErrorCorrection > 2) ? 2 : pErrorCorrection; // Limit corrections to 2
+          //console.log(errorCorrectionNum);
+          let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
+          sliceAnother(0, 0, errorCorrectionNum, finalWord, finalWord.length, tabs); // Start Recursion 
         }
       }
     });
