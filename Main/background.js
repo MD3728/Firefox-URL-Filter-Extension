@@ -63,7 +63,7 @@ setInterval(parseTime, 2000);
 // URL Checking Methods (Websites)
 let currentURL = "";
 function checkURL(currentWord, tabs){
-  console.log(currentWord);
+  //console.log(currentWord);
   // Check for blocked words on web pages
   if ((currentURL.includes(currentWord))&&(canCurrentlyBlock === true)&&(!exemptWords.includes(currentWord))){
     console.log(`Page Blocked Due To Word: ${currentWord}`);//Redirect
@@ -72,7 +72,7 @@ function checkURL(currentWord, tabs){
       url: "https://www.google.com/"
     });
     canCurrentlyBlock = false;
-    console.log("Hello")
+    console.log("Next Block Delayed 800ms")
     setTimeout(() => {canCurrentlyBlock = true;},800);
   }
 }
@@ -82,7 +82,6 @@ function checkURL(currentWord, tabs){
 function sliceAnother(startingIndex, numIteration, maxIteration, startingWord, wordLength, tabs){
   numIteration++;
   for (let a = startingIndex; a < startingWord.length; a++){//Replace maxIteration numIteration wordLength - maxIteration
-    totalCounter++;
     let finalWord = startingWord.slice(0,a) + startingWord.slice(a+1);
     //console.log(finalWord); 
     checkURL(finalWord, tabs);
