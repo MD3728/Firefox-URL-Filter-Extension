@@ -63,20 +63,21 @@ setInterval(parseTime, 2000);
 // URL Checking Methods (Websites)
 let currentURL = "";
 function checkURL(currentWord, tabs){
-  //console.log(currentWord);
-  // Check for blocked words on web pages
-  if ((currentURL.includes(currentWord))&&(canCurrentlyBlock === true)&&(!exemptWords.includes(currentWord))){
-    console.log(`Page Blocked Due To Word: ${currentWord}`);//Redirect
-    let updating = browser.tabs.update(tabs[0].id, {
-      active: true,
-      url: "https://www.google.com/"
-    });
-    canCurrentlyBlock = false;
-    console.log("Next Block Delayed 800ms")
-    setTimeout(() => {canCurrentlyBlock = true;},800);
+  if ((currentWord.length > 3)&&(canCurrentlyBlock)){// Word Set Contrasints
+    // console.log(currentWord);
+    // Check for blocked words on web pages
+    if ((currentURL.includes(currentWord))&&(!exemptWords.includes(currentWord))){
+      console.log(`Page Blocked Due To Word: ${currentWord}`);//Redirect
+      let updating = browser.tabs.update(tabs[0].id, {
+        active: true,
+        url: "https://www.google.com/"
+      });
+      canCurrentlyBlock = false;
+      console.log("Next Block Delayed 800ms")
+      setTimeout(() => {canCurrentlyBlock = true;}, 800);
+    }
   }
 }
-
 // URL Randomization Methods
 // Parameters: tabs is simply "tabs" from the browser getting passed on to perform checkURL
 function sliceAnother(startingIndex, numIteration, maxIteration, startingWord, wordLength, tabs){
@@ -97,7 +98,7 @@ function checkPage(){
     browser.tabs.query({active: true, currentWindow: true}, function(tabs){
       console.log(tabs[0].url);
       currentURL = tabs[0].url.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-      if (currentURL.slice(0,4) === "file"){// Check for blocked words on local files
+      if ((currentURL.slice(0,4) === "file")||(currentURL.slice(0,5) === "about")){// Check for blocked words on local files
         // Parse all the words
         for (let currentWord of worldBlockListLocal){
           // Check the entire word
