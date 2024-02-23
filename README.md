@@ -1,22 +1,48 @@
-# URL Word Filtering Extension - Firefox
-<strong>Version 1.0.1</strong>     
-<strong>Last Updated: 5/28/2023</strong>       
+# URL Filtering - Firefox Extension
+<strong>Version 1.0.2</strong>     
+<strong>Last Updated: 2/22/2024</strong>       
 
 # Description
 A simple web extension that blocks the words in the url set by the first array inside the program.          
-<strong>This version is only for Firefox Developer Edition, Nightly, or ESR versions</strong>
+<strong>This version is only for Firefox Developer, Nightly, or ESR versions</strong>
 
 # Purpose 
-Program can block words in web page URLs listed inside of the background.js file    
-Blocked pages with these words will be redirected to <a href="url">https://www.google.com/</a>    
+<ul>
+  <li>
+  Program can block words in web page URLs listed inside of the background.js file    
+  </li>
+  <li>
+  Blocked pages with these words will be redirected to <a href="url">https://www.google.com/</a>    
+  </li>
+  <li>
+  Variations of the words will also be blocked, and all non-alphanumeric characters will be removed from the URL before checking for blocked words.
+  </li>
+</ul>
 
 # Usage
-Edit the list inside of background.js to manage which words are blocked    
-Load Extension as Unpacked into Firefox browser for testing   
-Extension will block automatically and cannot be stopped unless it is disabled   
-Force install the extension if necessary using policies.json (Example is in the root directory) inside of the distribution folder in Program Files/Firefox
+<ol>
+  <li>
+  Edit the list inside of background.js to manage which words are blocked  
+  </li> 
+  <li> 
+  Load Extension unpacked into Firefox browser for testing   
+  </li>
+  <li>
+  Extension will block automatically and cannot be stopped unless it is disabled   
+  </li>
+  <li>
+  Force install the extension if necessary using policies.json (Example is in the root directory) inside of the distribution folder in Program Files/Firefox
+  </li>
+</ol>
 
 # Issues
-As of now, keywords with more than 13 characters will generate too many combinations, but program still runs fine as no combinations appears to be missing. AKA algorithm not functional nor optimized
+<ul>
+  <li>
+  Some combinations of words will cause issues with popular websites, especially logins. Make sure to test the extension and determine the exceptions list. 
+  </li>
+  <li>
+  The extension has a delay between loading webpages to prevent infinite reloading. This delay can be adjusted in the background.js file.
+  </li>
+</ul> 
 
 

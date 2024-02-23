@@ -24,7 +24,7 @@ let worldBlockListLocal = [
 
 ];
 
-// The following word will not be checked
+// The following words will not be checked
 let exemptWords = [
 
   // Insert most recent words that need to be blocked
@@ -140,33 +140,5 @@ browser.tabs.onUpdated.addListener(() => {
   checkPage();
 });
 
-// Original code for each
-// () => {
-//   //console.log("onActivated Listener Running");
-//   if ((!parseTime())&&(canCurrentlyBlock === true)){
-//     browser.tabs.query({active: true, currentWindow: true}, function(tabs){
-//       console.log(tabs[0].url);
-//       currentURL = tabs[0].url.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-//       // Parse all the words
-//       for (let currentWord of worldBlockListWeb){
-//         // Check the entire word
-//         checkURL(currentWord.replace(/[^a-zA-Z]/gi, ''), tabs);
 
-//         // Check the fragments of the word
-//         let wordLength = currentWord.length;
-//         let errorCorrectionNum = Math.floor((currentWord.length-1)/4);
-//         if (errorCorrectionNum >= 1){
-//           for (let a = 0; a < wordLength - errorCorrectionNum + 1; a++){
-//             let finalWord = currentWord.toLowerCase().replace(/[^a-zA-Z]/gi, '');
-//             finalWord = finalWord.slice(0,a) + finalWord.slice(a+1);
-//             checkURL(finalWord, tabs);
-//             if (errorCorrectionNum > 1){
-//               sliceAnother(a+1, 1, errorCorrectionNum, finalWord, wordLength, tabs);
-//             }
-//           }
-//         } 
-//       }
-//     });
-//   }
-// }
 
